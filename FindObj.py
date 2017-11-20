@@ -62,11 +62,11 @@ def RUN_TEST (INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH, OBJ_RADIUS):
 
     input_matrix =  np.random.randint(10,size=(INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH)).astype(np.int32)
 
-    input_matrix[8,9] = 1
-    input_matrix[9,9] = 1
-    input_matrix[9,8] = 1
-    input_matrix[9,10] = 1
-    input_matrix[10,9] = 1
+    input_matrix[32,33] = 1
+    input_matrix[33,33] = 1
+    input_matrix[33,32] = 1
+    input_matrix[33,34] = 1
+    input_matrix[34,33] = 1
     print (input_matrix)
 
     # Setup Params
@@ -92,7 +92,7 @@ def RUN_TEST (INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH, OBJ_RADIUS):
     print (b_gpu.get())
     print (c_gpu.get())
 
-RUN_TEST(16, 16, 1)
+RUN_TEST(35, 35, 1)
 
 
 
