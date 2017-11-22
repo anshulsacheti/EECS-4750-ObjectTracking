@@ -9,7 +9,7 @@ import pycuda.autoinit
 kernels = compiler.SourceModule("""
 #include <stdio.h>
 
-__global__ void FindObj(int* a, int* b, int* c, int height, int width)
+__global__ void FindObj(int* a, int* b, int* c, int img_height, int img_width)
 {
    // Setup Indexing
    int tx = threadIdx.x;
@@ -22,21 +22,21 @@ __global__ void FindObj(int* a, int* b, int* c, int height, int width)
    // printf("blockIdx.y:%i blockDim.y:%i \\n", blockIdx.y, blockDim.y);
    // printf("blockIdx.x:%i blockDim.x:%i \\n", blockIdx.x, blockDim.x);
 
-   if(row_o < height && col_o < width)
+   if(row_o < img_height && col_o < img_width)
    {
-      // printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
-      int pixelColor = a[row_o*width + col_o];
+      // printf("row_o:%i col_o:%i a[row_o*img_width + col_o]: %i \\n",row_o, col_o, a[row_o*img_width + col_o]);
+      int pixelColor = a[row_o*img_width + col_o];
 
-      // printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
+      // printf("row_o:%i col_o:%i a[row_o*img_width + col_o]: %i \\n",row_o, col_o, a[row_o*img_width + col_o]);
 
       // Lots of different ways to detect obj
       
       // Find 4 point cross
       /*
-      if((row_o + 1 <= height  && a[(row_o + 1)*width + col_o] == pixelColor) &&
-               (row_o - 1 >= 0       && a[(row_o - 1)*width + col_o] == pixelColor) &&
-               (col_o + 1 <= width   && a[row_o*width + col_o + 1]   == pixelColor) &&
-               (col_o - 1 >= 0       && a[row_o*width + col_o - 1]   == pixelColor)
+      if((row_o + 1 <= img_height  && a[(row_o + 1)*img_width + col_o] == pixelColor) &&
+               (row_o - 1 >= 0       && a[(row_o - 1)*img_width + col_o] == pixelColor) &&
+               (col_o + 1 <= img_width   && a[row_o*img_width + col_o + 1]   == pixelColor) &&
+               (col_o - 1 >= 0       && a[row_o*img_width + col_o - 1]   == pixelColor)
             )
             {
         b[0] = row_o;
@@ -46,10 +46,10 @@ __global__ void FindObj(int* a, int* b, int* c, int height, int width)
 
       // Find Corner
       // TODO: FIX WHEN SQUARE IS ON THE EDGE OF IMAGE...
-      if((row_o + 2 <= height  && a[(row_o + 1)*width + col_o] == pixelColor && a[(row_o + 2)*width + col_o] == pixelColor) &&
-         (row_o - 2 >= 0       && a[(row_o - 1)*width + col_o] != pixelColor && a[(row_o - 2)*width + col_o] != pixelColor) &&
-         (col_o + 2 <= width   && a[row_o*width + col_o + 1]   == pixelColor && a[row_o*width + col_o + 2]   == pixelColor) &&
-         (col_o - 2 >= 0       && a[row_o*width + col_o - 1]   != pixelColor && a[row_o*width + col_o - 2]   != pixelColor))
+      if((row_o + 2 <= img_height  && a[(row_o + 1)*img_width + col_o] == pixelColor && a[(row_o + 2)*img_width + col_o] == pixelColor) &&
+         (row_o - 2 >= 0       && a[(row_o - 1)*img_width + col_o] != pixelColor && a[(row_o - 2)*img_width + col_o] != pixelColor) &&
+         (col_o + 2 <= img_width   && a[row_o*img_width + col_o + 1]   == pixelColor && a[row_o*img_width + col_o + 2]   == pixelColor) &&
+         (col_o - 2 >= 0       && a[row_o*img_width + col_o - 1]   != pixelColor && a[row_o*img_width + col_o - 2]   != pixelColor))
         {
           b[0] = row_o;
           c[0] = col_o;
