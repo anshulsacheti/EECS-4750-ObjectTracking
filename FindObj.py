@@ -17,39 +17,33 @@ __global__ void FindObj(int* a, int* b, int* c, int height, int width, int objRa
    int row_o = blockIdx.y*blockDim.y + ty;
    int col_o = blockIdx.x*blockDim.x + tx;
 
-  // printf("%i %i \\n", tx, ty);
-  // printf("row_o:%i col_o:%i \\n", row_o, col_o);
-  // printf("blockIdx.y:%i blockDim.y:%i \\n", blockIdx.y, blockDim.y);
-  // printf("blockIdx.x:%i blockDim.x:%i \\n", blockIdx.x, blockDim.x);
+   // printf("%i %i \\n", tx, ty);
+   // printf("row_o:%i col_o:%i \\n", row_o, col_o);
+   // printf("blockIdx.y:%i blockDim.y:%i \\n", blockIdx.y, blockDim.y);
+   // printf("blockIdx.x:%i blockDim.x:%i \\n", blockIdx.x, blockDim.x);
 
-  if(ty < blockDim.y && tx < blockDim.x)
-  {
-      if(row_o < height && col_o < width)
-      {
+   if(row_o < height && col_o < width)
+   {
 	// printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
 
-        if(a[row_o*width + col_o] == 1)
+	int pixelColor = a[row_o*width + col_o];
+
+        // Lots of different ways to detect obj
+	// Four points
+
+        // printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
+
+	if((row_o + objRadius <= height  && a[(row_o + objRadius)*width + col_o] == pixelColor) &&
+           (row_o - objRadius >= 0       && a[(row_o - objRadius)*width + col_o] == pixelColor) &&
+           (col_o + objRadius <= width   && a[row_o*width + col_o + objRadius]   == pixelColor) &&
+           (col_o - objRadius >= 0       && a[row_o*width + col_o - objRadius]   == pixelColor)
+        )
         {
-          // Lots of different ways to detect obj
-	  // Four points
+	  b[0] = row_o;
+	  c[0] = col_o;
+	}
 
-          // printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
-
-	  if((row_o + objRadius <= height  && a[(row_o + objRadius)*width + col_o] == 1) &&
-             (row_o - objRadius >= 0       && a[(row_o - objRadius)*width + col_o] == 1) &&
-             (col_o + objRadius <= width   && a[row_o*width + col_o + objRadius]   == 1) &&
-             (col_o - objRadius >= 0       && a[row_o*width + col_o - objRadius]   == 1)
-          )
-          {
-	    b[0] = row_o;
-	    c[0] = col_o;
-	  }
-
-
-        }
-
-      }
-  }
+   }
 
 }
 
