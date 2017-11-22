@@ -9,7 +9,7 @@ import pycuda.autoinit
 kernels = compiler.SourceModule("""
 #include <stdio.h>
 
-__global__ void FindObj(int* a, int* b, int* c, int height, int width, int objRadius)
+__global__ void FindObj(int* a, int* b, int* c, int height, int width)
 {
    // Setup Indexing
    int tx = threadIdx.x;
@@ -24,27 +24,37 @@ __global__ void FindObj(int* a, int* b, int* c, int height, int width, int objRa
 
    if(row_o < height && col_o < width)
    {
-	// printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
+      // printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
+      int pixelColor = a[row_o*width + col_o];
 
-	int pixelColor = a[row_o*width + col_o];
+      // printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
 
-        // Lots of different ways to detect obj
-	// Four points
+      // Lots of different ways to detect obj
+      
+      // Find 4 point cross
+      /*
+      if((row_o + 1 <= height  && a[(row_o + 1)*width + col_o] == pixelColor) &&
+               (row_o - 1 >= 0       && a[(row_o - 1)*width + col_o] == pixelColor) &&
+               (col_o + 1 <= width   && a[row_o*width + col_o + 1]   == pixelColor) &&
+               (col_o - 1 >= 0       && a[row_o*width + col_o - 1]   == pixelColor)
+            )
+            {
+        b[0] = row_o;
+        c[0] = col_o;
+      }
+      */
 
-        // printf("row_o:%i col_o:%i a[row_o*width + col_o]: %i \\n",row_o, col_o, a[row_o*width + col_o]);
-
-	if((row_o + objRadius <= height  && a[(row_o + objRadius)*width + col_o] == pixelColor) &&
-           (row_o - objRadius >= 0       && a[(row_o - objRadius)*width + col_o] == pixelColor) &&
-           (col_o + objRadius <= width   && a[row_o*width + col_o + objRadius]   == pixelColor) &&
-           (col_o - objRadius >= 0       && a[row_o*width + col_o - objRadius]   == pixelColor)
-        )
+      // Find Corner
+      // TODO: FIX WHEN SQUARE IS ON THE EDGE OF IMAGE...
+      if((row_o + 2 <= height  && a[(row_o + 1)*width + col_o] == pixelColor && a[(row_o + 2)*width + col_o] == pixelColor) &&
+         (row_o - 2 >= 0       && a[(row_o - 1)*width + col_o] != pixelColor && a[(row_o - 2)*width + col_o] != pixelColor) &&
+         (col_o + 2 <= width   && a[row_o*width + col_o + 1]   == pixelColor && a[row_o*width + col_o + 2]   == pixelColor) &&
+         (col_o - 2 >= 0       && a[row_o*width + col_o - 1]   != pixelColor && a[row_o*width + col_o - 2]   != pixelColor))
         {
-	  b[0] = row_o;
-	  c[0] = col_o;
-	}
-
-   }
-
+          b[0] = row_o;
+          c[0] = col_o;
+        }
+    }
 }
 
 """)
@@ -52,15 +62,16 @@ __global__ void FindObj(int* a, int* b, int* c, int height, int width, int objRa
 findObj_CUDA = kernels.get_function("FindObj")
 
 
-def RUN_TEST (INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH, OBJ_RADIUS):
+def RUN_TEST (INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH):
 
     input_matrix =  np.random.randint(10,size=(INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH)).astype(np.int32)
 
-    input_matrix[32,33] = 1
-    input_matrix[33,33] = 1
-    input_matrix[33,32] = 1
-    input_matrix[33,34] = 1
-    input_matrix[34,33] = 1
+    SQUARE_WIDTH = 3
+    ORIGIN = 10
+    for x in range(0, SQUARE_WIDTH):
+	  for y in range(0, SQUARE_WIDTH):
+		input_matrix[x + ORIGIN, y + ORIGIN] = 1
+
     print (input_matrix)
 
     # Setup Params
@@ -79,14 +90,14 @@ def RUN_TEST (INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH, OBJ_RADIUS):
 
     CUDARunTime = 0
     start = time.time()
-    findObj_CUDA(a_gpu, b_gpu, c_gpu, np.int32(INPUT_SIZE_HEIGHT), np.int32(INPUT_SIZE_WIDTH), np.int32(OBJ_RADIUS), block = block, grid = gdim)
+    findObj_CUDA(a_gpu, b_gpu, c_gpu, np.int32(INPUT_SIZE_HEIGHT), np.int32(INPUT_SIZE_WIDTH), block = block, grid = gdim)
     CUDARunTime = time.time() - start
     print (CUDARunTime)
 
     print (b_gpu.get())
     print (c_gpu.get())
 
-RUN_TEST(35, 35, 1)
+RUN_TEST(20, 20)
 
 
 
