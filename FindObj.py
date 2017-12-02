@@ -48,7 +48,7 @@ __global__ void FindObj(int* a, int* b, int* c, int img_height, int img_width)
       // Find Corner
       // TODO: FIX WHEN SQUARE IS ON THE EDGE OF IMAGE...
 
-      point x,y
+     /* point x,y
       point x-1,y if exists is different, point x,y-1 if exists is different
 
       Equal, and legal location
@@ -60,7 +60,7 @@ __global__ void FindObj(int* a, int* b, int* c, int img_height, int img_width)
 
       Unequal
       row_o + 1*img_width is < img_height && unequal
-      col_o - 1 is >= 0 && unequal
+      col_o - 1 is >= 0 && unequal */
 
       if(
          (row_o + 2 <= img_height  && a[(row_o + 1)*img_width + col_o] == pixelColor && a[(row_o + 2)*img_width + col_o] == pixelColor) &&
