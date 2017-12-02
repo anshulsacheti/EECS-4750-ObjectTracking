@@ -2,7 +2,7 @@ import numpy as np
 import pdb
 from PIL import Image
 
-def frameGenerator( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
+def gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
                     color_scale = 256, size_of_object = 4, movement_distance = 4):
     """
     Generates sets of frames that represent frame to frame movement for each frame set
@@ -87,4 +87,4 @@ def frameGenerator( frame_size = [256, 256], num_of_frames = 2, move_set = ["rig
 
     return frame_set
 if __name__ == '__main__':
-    frameGenerator()
+    gen()
