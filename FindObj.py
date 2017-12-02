@@ -2,6 +2,7 @@ import numpy as np
 import time
 from scipy import signal
 from pycuda import driver, compiler, gpuarray, tools
+import frameGenerator
 
 import pycuda.autoinit
 
@@ -30,7 +31,7 @@ __global__ void FindObj(int* a, int* b, int* c, int img_height, int img_width)
       // printf("row_o:%i col_o:%i a[row_o*img_width + col_o]: %i \\n",row_o, col_o, a[row_o*img_width + col_o]);
 
       // Lots of different ways to detect obj
-      
+
       // Find 4 point cross
       /*
       if((row_o + 1 <= img_height  && a[(row_o + 1)*img_width + col_o] == pixelColor) &&
@@ -46,7 +47,23 @@ __global__ void FindObj(int* a, int* b, int* c, int img_height, int img_width)
 
       // Find Corner
       // TODO: FIX WHEN SQUARE IS ON THE EDGE OF IMAGE...
-      if((row_o + 2 <= img_height  && a[(row_o + 1)*img_width + col_o] == pixelColor && a[(row_o + 2)*img_width + col_o] == pixelColor) &&
+
+      point x,y
+      point x-1,y if exists is different, point x,y-1 if exists is different
+
+      Equal, and legal location
+      (row_o + 1)*img_width < img_height && equal
+      (row_o + 2)*img_width < img_height && equal
+
+      col_o + 1 < img_width
+      col_o + 2 < img_width
+
+      Unequal
+      row_o + 1*img_width is < img_height && unequal
+      col_o - 1 is >= 0 && unequal
+
+      if(
+         (row_o + 2 <= img_height  && a[(row_o + 1)*img_width + col_o] == pixelColor && a[(row_o + 2)*img_width + col_o] == pixelColor) &&
          (row_o - 2 >= 0       && a[(row_o - 1)*img_width + col_o] != pixelColor && a[(row_o - 2)*img_width + col_o] != pixelColor) &&
          (col_o + 2 <= img_width   && a[row_o*img_width + col_o + 1]   == pixelColor && a[row_o*img_width + col_o + 2]   == pixelColor) &&
          (col_o - 2 >= 0       && a[row_o*img_width + col_o - 1]   != pixelColor && a[row_o*img_width + col_o - 2]   != pixelColor))
@@ -54,6 +71,12 @@ __global__ void FindObj(int* a, int* b, int* c, int img_height, int img_width)
           b[0] = row_o;
           c[0] = col_o;
         }
+
+    //Gather all criteria for corner
+    //Check all criteria for validity
+    //Modulo absolute thread location by frame size and store x val/y val to according locations in global array
+    //After all global array values set, compare set of 2 x/y pairs to determine movement and set movement indicator in other global array
+    //Return final global array
     }
 }
 
@@ -65,6 +88,9 @@ findObj_CUDA = kernels.get_function("FindObj")
 def RUN_TEST (INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH):
 
     input_matrix =  np.random.randint(10,size=(INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH)).astype(np.int32)
+
+    frames = frameGenerator.gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
+                        color_scale = 256, size_of_object = 15, movement_distance = 10)
 
     SQUARE_WIDTH = 3
     ORIGIN = 10
@@ -98,6 +124,3 @@ def RUN_TEST (INPUT_SIZE_HEIGHT, INPUT_SIZE_WIDTH):
     print (c_gpu.get())
 
 RUN_TEST(20, 20)
-
-
-
