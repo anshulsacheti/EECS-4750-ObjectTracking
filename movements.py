@@ -41,5 +41,4 @@ def frameCompare(originPoints):
       
   return movements
   
-  
-print ()
+ 
