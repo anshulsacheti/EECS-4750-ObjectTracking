@@ -58,8 +58,8 @@ def Kernel_Wrapper (frames):
 #                        color_scale = 256, size_of_object = 15, movement_distance = 10)
 
 
-frames = frameGenerator.gen( frame_size = [25, 25], num_of_frames = 2, move_set = ["right", "up"],
-                       color_scale = 256, size_of_object = 4, movement_distance = 4)
+frames = frameGenerator.gen( frame_size = [8, 8], num_of_frames = 2, move_set = ["right", "up"],
+                       color_scale = 256, size_of_object = 2, movement_distance = 1)
 
 origin = Kernel_Wrapper(frames)
 frameMovements = movements.frameCompare(origin)
