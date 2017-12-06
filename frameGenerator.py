@@ -44,16 +44,20 @@ def gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
     object_x = object_y = object_z = 0
     object_val = np.random.randint(0,high=color_scale)
 
+    # Golden reference coordinates for origin of object
+    goldenCoord = []
     if num_of_dims == 2:
         object_y = object_idx[0]
         object_x = object_idx[1]
         frame1[object_y:(object_y+size_of_object),object_x:(object_x+size_of_object)] = object_val
+        goldenCoord = [object_x, object_y]
 
     elif num_of_dims == 3:
         object_y = object_idx[0]
         object_x = object_idx[1]
         object_z = object_idx[2]
         frame1[object_y:(object_y+size_of_object),object_x:(object_x+size_of_object),object_z:(object_z+size_of_object)] = object_val
+        goldenCoord = [object_x, object_y]
 
     # Create frames with each new movement
     frame_set = [frame1]
@@ -79,12 +83,14 @@ def gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
 
         if num_of_dims == 2:
             copy[object_y:(object_y+size_of_object),object_x:(object_x+size_of_object)] = object_val
+            goldenCoord.extend([object_x, object_y])
 
         elif num_of_dims == 3:
             copy[object_y:(object_y+size_of_object),object_x:(object_x+size_of_object),object_z:(object_z+size_of_object)] = object_val
+            goldenCoord.extend([object_x, object_y, object_z])
 
         frame_set.append(copy)
 
-    return frame_set
+    return [frame_set, goldenCoord]
 if __name__ == '__main__':
     gen()
