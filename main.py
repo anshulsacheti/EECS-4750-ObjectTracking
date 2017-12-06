@@ -34,7 +34,8 @@ def Kernel_Wrapper (frames):
     start = time.time()
 
     # switch out kernels
-    # findObj_CUDA(a_gpu, frameOrigin_gpu, c_gpu, np.int32(INPUT_SIZE_HEIGHT), np.int32(INPUT_SIZE_WIDTH), block = block, grid = gdim)
+    FindObj_CUDA = kernel.genModulo().get_function("FindObj")
+    FindObj_CUDA(a_gpu, frameOrigin_gpu, c_gpu, np.int32(INPUT_SIZE_HEIGHT), np.int32(INPUT_SIZE_WIDTH), block = block, grid = gdim)
 
     CUDARunTime = time.time() - start
 
