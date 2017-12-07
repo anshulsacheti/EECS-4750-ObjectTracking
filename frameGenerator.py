@@ -79,7 +79,7 @@ def gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
         # Determine if movement causes object to move out of bounds, ignore this frame set
         if object_x < 0 or object_x+size_of_object >= frame_size[0] or object_y < 0 or object_y+size_of_object >= frame_size[1]:
             print("Got out of bounds")
-            return []
+            return [[],[]]
 
         if num_of_dims == 2:
             copy[object_y:(object_y+size_of_object),object_x:(object_x+size_of_object)] = object_val
