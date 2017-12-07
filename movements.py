@@ -1,7 +1,6 @@
 
 import numpy as np
 import time
-from scipy import signal
 from enum import Enum
 
 class Directions(Enum):
