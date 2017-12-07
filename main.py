@@ -10,6 +10,8 @@ import movements
 def Kernel_Wrapper (frames):
     
     input_matrix = np.vstack(frames)
+    INPUT_SIZE_WIDTH = input_matrix.shape[1]
+    INPUT_SIZE_HEIGHT = input_matrix.shape[0]
     
     print ("INPUT TO GPU")
     print (input_matrix)
