@@ -104,7 +104,6 @@ def genModulo():
         //Modulo absolute thread location by frame size and store x val/y val to according locations in global array
         //After all global array values set, compare set of 2 x/y pairs to determine movement and set movement indicator in other global array
         //Return final global array
-        }
     }
 
     """)
