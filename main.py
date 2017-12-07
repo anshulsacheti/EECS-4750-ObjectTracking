@@ -64,6 +64,5 @@ frames = []
 goldenCoord = []
 while (not frames):
     frames, goldenCoord = frameGenerator.gen( frame_size = [10, 10], num_of_frames = 5, move_set = ["right", "up", "right", "down", "left"], color_scale = 256, size_of_object = 2, movement_distance = 2)
-
 origin = Kernel_Wrapper(frames)
 frameMovements = movements.frameCompare(origin)
