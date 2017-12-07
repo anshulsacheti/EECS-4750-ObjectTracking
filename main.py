@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from pycuda import driver, compiler, gpuarray, tools
+from pycuda import compiler, gpuarray
 import frameGenerator
 import kernel
 import movements
@@ -8,11 +8,9 @@ import movements
 
 ######################################################################################################################################
 def Kernel_Wrapper (frames):
-    
+
     input_matrix = np.vstack(frames)
-    INPUT_SIZE_WIDTH = input_matrix.shape[1]
-    INPUT_SIZE_HEIGHT = input_matrix.shape[0]
-    
+
     print ("INPUT TO GPU")
     print (input_matrix)
 
@@ -42,7 +40,7 @@ def Kernel_Wrapper (frames):
 
     print ("CUDA RUNTIME")
     print (CUDARunTime)
-    
+
     print ("Frame Origins")
     print (frameOrigin_gpu.get())
 
@@ -61,8 +59,9 @@ def Kernel_Wrapper (frames):
 
 
 frames = []
+goldenCoord = []
 while (not frames):
-    frames = frameGenerator.gen( frame_size = [10, 10], num_of_frames = 5, move_set = ["right", "up", "right", "down", "left"],
+    frames, goldenCoord = frameGenerator.gen( frame_size = [10, 10], num_of_frames = 5, move_set = ["right", "up", "right", "down", "left"],
                            color_scale = 256, size_of_object = 2, movement_distance = 2)
 
 origin = Kernel_Wrapper(frames)
