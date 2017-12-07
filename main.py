@@ -17,7 +17,7 @@ def Kernel_Wrapper (frames):
     print (input_matrix)
 
     # Setup Params
-    FRAME_BATCH_SIZE = len(frames)
+    FRAME_BATCH_SIZE = len(frames) * 2
     BLOCK_WIDTH = 16
     BLOCK_HEIGHT = 16
     GRID_WIDTH = (INPUT_SIZE_WIDTH - 1) // BLOCK_WIDTH + 1
@@ -63,6 +63,8 @@ def Kernel_Wrapper (frames):
 frames = []
 goldenCoord = []
 while (not frames):
-    frames, goldenCoord = frameGenerator.gen( frame_size = [10, 10], num_of_frames = 5, move_set = ["right", "up", "right", "down", "left"], color_scale = 256, size_of_object = 2, movement_distance = 2)
+    frames, goldenCoord = frameGenerator.gen( frame_size = [10, 10], num_of_frames = 5, move_set = ["right", "up", "right", "down", "left"],
+                                              color_scale = 256, size_of_object = 2, movement_distance = 2)
+
 origin = Kernel_Wrapper(frames)
 frameMovements = movements.frameCompare(origin)
