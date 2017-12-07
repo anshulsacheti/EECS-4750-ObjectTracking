@@ -1,6 +1,5 @@
 import numpy as np
 import time
-from scipy import signal
 from pycuda import driver, compiler, gpuarray, tools
 import frameGenerator
 import kernel
