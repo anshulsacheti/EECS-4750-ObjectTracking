@@ -96,9 +96,16 @@ MOVEMENT_HASH = []
 a_gpu = gpuarray.to_gpu(np.asarray(frameMovementsInts, dtype=np.int32))
 b_gpu = gpuarray.zeros((4), np.int32)
 Hist_Moves = kernel.genHist().get_function("histOpt")
-Hist_Moves(a_gpu, b_gpu, block=(4,1,1))
+Hist_Moves(a_gpu, b_gpu, block=(len(frameMovementsInts),1,1))
 print("Histogram Movements")
 print(b_gpu.get())
+
+MOVEMENT_HASH += b_gpu.get().tolist()
+
+
+
+
+
 
 
 
@@ -137,9 +144,43 @@ NeighborSlope(a_gpu, slopesBetweenJumps, np.int32(JUMP), block=((len(zeroed),1,1
 
 print(slopesBetweenJumps)
 
+
+
 # still need algo to count the Sides...
+# counts slope change
+currSlope = 10000
+sides = 0
+for x in slopesBetweenJumps.get():
+   if(abs(x - currSlope) > 10):
+      sides +=1
+      currSlope = x
+
+print("Sides")
+print(sides)
+
+MOVEMENT_HASH.append(sides)
 
 
+# could also do a running count
+# increase when a certain threshold of exact numbers have been met
+countSides = 0;
+currSlope2 = 10000;
+runningTotal = 0
+for x in slopesBetweenJumps.get():
+
+   if(x == currSlope2):
+      runningTotal += 1
+   else:
+      currSlope2 = x
+      runningTotal = 0
+
+   if(runningTotal == 3):
+      countSides += 1
+
+print("Sides2")
+print(countSides)
+
+#MOVEMENT_HASH.append(countSides)
 
 
 
@@ -182,8 +223,8 @@ MOVEMENT_DB.append([0.001, 0.001, 0.001, 1, 1])
 MOVEMENT_DB_NAME.append("LINE-RIGHT")
 
 
-testInput = [10,0,0,10,4]
-GPU_IN = gpuarray.to_gpu(np.asarray(testInput, dtype=np.float32))
+#testInput = [10,0,0,10,4]
+GPU_IN = gpuarray.to_gpu(np.asarray(MOVEMENT_HASH, dtype=np.float32))
 
 zeroed = np.zeros(len(MOVEMENT_DB), dtype = np.float32)
 SCORED_CLOSENESS = gpuarray.to_gpu(zeroed)
