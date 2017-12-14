@@ -46,3 +46,41 @@ def frameCompare(originPoints):
   return movements, movementsInt
   
  
+
+# DATABASE OF MOVEMENTS
+
+MOVEMENT_DB = []
+MOVEMENT_DB_NAME = []
+
+MOVEMENT_DB.append([0.25, 0.25, 0.25, 0.25, 3])
+MOVEMENT_DB_NAME.append("TRIANGLE")
+
+MOVEMENT_DB.append([0.25, 0.25, 0.25, 0.25, 4])
+MOVEMENT_DB_NAME.append("SQUARE")
+
+MOVEMENT_DB.append([0.25, 0.25, 0.25, 0.25, 5])
+MOVEMENT_DB_NAME.append("PENTAGON")
+
+MOVEMENT_DB.append([0.5, 0.001, 0.5, 0.001, 4])
+MOVEMENT_DB_NAME.append("ZIG-ZAG-UP-LEFT-4-SIDES")
+
+MOVEMENT_DB.append([0.5, 0.001, 0.001, 0.5, 4])
+MOVEMENT_DB_NAME.append("ZIG-ZAG-UP-RIGHT-4-SIDES")
+
+MOVEMENT_DB.append([0.001, 0.5, 0.5, 0.001, 4])
+MOVEMENT_DB_NAME.append("ZIG-ZAG-DOWN-LEFT-4-SIDES")
+
+MOVEMENT_DB.append([0.001, 0.5, 0.001, 0.5, 4])
+MOVEMENT_DB_NAME.append("ZIG-ZAG-DOWN-RIGHT-4-SIDES")
+
+MOVEMENT_DB.append([1, 0.001, 0.001, 0.001, 1])
+MOVEMENT_DB_NAME.append("LINE-UP")
+
+MOVEMENT_DB.append([0.001, 1, 0.001, 0.001, 1])
+MOVEMENT_DB_NAME.append("LINE-DOWN")
+
+MOVEMENT_DB.append([0.001, 0.001, 1, 0.001, 1])
+MOVEMENT_DB_NAME.append("LINE-LEFT")
+
+MOVEMENT_DB.append([0.001, 0.001, 0.001, 1, 1])
+MOVEMENT_DB_NAME.append("LINE-RIGHT")
