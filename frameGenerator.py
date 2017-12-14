@@ -2,8 +2,8 @@ import numpy as np
 import pdb
 from PIL import Image
 
-def gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
-                    color_scale = 256, size_of_object = 4, movement_distance = 4):
+def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"],
+                    color_scale = 256, size_of_object = 8, movement_distance = 4):
     """
     Generates sets of frames that represent frame to frame movement for each frame set
     Adds object to each frame with location adjusted against previous frame movement
@@ -22,13 +22,112 @@ def gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
     # pdb.set_trace()
 
     # Evaluate inputs correct
-    if num_of_frames != len(move_set):
+    if not(move_set[0] in ['line','zig_zag','triangle', 'square', 'pentagon']) and \
+        (num_of_frames != len(move_set)):
         raise InputError('Number of frames generated doesn\'t match number of movements')
         return
 
     if len(frame_size) < 2:
         raise InputError('Frame Size is not at least 2d')
         return
+
+    # Overwriting move_set with auto generated actions that represent:
+    # ['line','zig_zag','triangle', 'square', 'pentagon']
+    if move_set[0] in ['line','zig_zag','triangle', 'square', 'pentagon']:
+
+        if   move_set[0] == 'line':
+            direction = np.random.choice(['up','down','left','right'])
+            move_set = [direction]*num_of_frames
+
+        elif move_set[0] == 'zig_zag':
+
+            # Make even
+            if num_of_frames % 2:
+                num_of_frames -= 1
+
+            v_direction = np.random.choice(['up','down'])
+            h_direction = np.random.choice(['left','right'])
+
+            num_of_frames_div2 = int(num_of_frames/2)
+
+            if np.random.uniform()>0.5:
+                move_set = [v_direction, h_direction]*num_of_frames_div2
+            else:
+                move_set = [h_direction, v_direction]*num_of_frames_div2
+
+        elif move_set[0] == 'triangle':
+
+            # Make divisble by 4
+            if num_of_frames % 4:
+                num_of_frames = (num_of_frames/4) * 4
+
+            move_set = []
+
+            if np.random.uniform()>0.5:
+                v_direction = 'up'
+                v_next_direction = 'down'
+            else:
+                v_direction = 'down'
+                v_next_direction = 'up'
+
+            if np.random.uniform()>0.5:
+                h_direction = 'left'
+                h_next_direction = 'right'
+            else:
+                h_direction = 'right'
+                h_next_direction = 'left'
+
+            num_of_frames_div4 = int(num_of_frames/4)
+            num_of_frames_div2 = int(num_of_frames/2)
+
+            # Different combinations form different triangles
+            if np.random.uniform()>0.5:
+                move_set = [v_direction, h_direction]*num_of_frames_div4
+                move_set.extend([v_next_direction, h_direction]*num_of_frames_div4)
+                move_set.extend([h_next_direction]*num_of_frames_div2)
+            else:
+                move_set = [h_direction, v_direction]*num_of_frames_div4
+                move_set.extend([h_next_direction,v_direction]*num_of_frames_div4)
+                move_set.extend([v_next_direction]*num_of_frames_div2)
+
+        elif move_set[0] == 'square':
+
+            # Make divisble by 4
+            if num_of_frames % 4:
+                num_of_frames = (num_of_frames/4) * 4
+
+            move_set = []
+            num_of_frames_div4 = int(num_of_frames/4)
+
+            move_set.append(['up']*num_of_frames_div4)
+            move_set.append(['left']*num_of_frames_div4)
+            move_set.append(['down']*num_of_frames_div4)
+            move_set.append(['right']*num_of_frames_div4)
+
+            # Put different sets of directions together
+            move_set = np.roll(move_set,np.random.randint(4))
+            move_set = [dir for set in move_set for dir in set]
+
+        elif move_set[0] == 'pentagon':
+
+            # Make divisble by 6 based on pentagon we're trying to draw
+            if num_of_frames % 6:
+                num_of_frames = (num_of_frames/6) * 6
+
+            move_set = []
+            num_of_frames_div3 = int(num_of_frames/3)
+            num_of_frames_div6 = int(num_of_frames/6)
+            num_of_frames_div12 = int(num_of_frames/12)
+
+            move_set.append(['up']*num_of_frames_div6)
+            move_set.append(['right','up']*num_of_frames_div12)
+            move_set.append(['right','down']*num_of_frames_div12)
+            move_set.append(['down']*num_of_frames_div6)
+            move_set.append(['left']*num_of_frames_div3)
+
+            # Put different sets of directions together
+            move_set = np.roll(move_set,np.random.randint(5))
+            move_set = [dir for set in move_set for dir in set]
 
     # Generate initial frame
     frame0 = np.random.randint(0,high=color_scale-1,size=frame_size)
@@ -91,6 +190,10 @@ def gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
 
         frame_set.append(copy)
 
+    for i,frame in enumerate(frame_set):
+        frame = frame.astype(np.uint8)
+        tmp = Image.fromarray(frame)
+        tmp.save('frame' + str(i) + '.png')
     return [frame_set, goldenCoord]
 if __name__ == '__main__':
     gen()
