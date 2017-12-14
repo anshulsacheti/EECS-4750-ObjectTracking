@@ -20,6 +20,7 @@ class Directions(Enum):
 def frameCompare(originPoints):
 
   movements = []
+  movementsInt = []
 
   for i in range(0, len(originPoints) - 2, 2):
     xMovement = originPoints[i + 2] - originPoints[i]
@@ -27,17 +28,21 @@ def frameCompare(originPoints):
     
     if (xMovement > 0):
       movements.append(Directions.RIGHT)
+      movementsInt.append(3)
     elif (xMovement < 0):
       movements.append(Directions.LEFT)
+      movementsInt.append(2)
     elif (yMovement < 0):
       movements.append(Directions.UP)
+      movementsInt.append(0)
     elif (yMovement > 0):
       movements.append(Directions.DOWN)
+      movementsInt.append(1)
     else:
       movements.append(Directions.NONE)
-
+      movementsInt.append(4)
 
       
-  return movements
+  return movements, movementsInt
   
  
