@@ -257,17 +257,19 @@ def MovementAnalysis():
     __global__ void SlopeHistory(float* a, float* b)
     {
        int tx = threadIdx.x;
+       // Establish the initial point
        float initialPointX = a[0];
        float initialPointY = a[1];
        //printf("tx: %i, a[tx]: %f \\n", tx, a[tx]);
 
        if(tx >= 1)
        {
-
+           // Get the point which will build the slope from the initial point
            float historyPointX = a[tx * 2];
            float historyPointY = a[(tx * 2) + 1];
            //printf("tx: %f, historyPointX: %f, historyPointY: %f, initialPointX: %f, initialPointY: %f \\n", tx, historyPointX, historyPointY, initialPointX, initialPointY);
 
+           // Build the list of all historical slopes with respect to the start point
            if(historyPointX - initialPointX > 0)
            {
                b[tx - 1] = (historyPointY - initialPointY) / (historyPointX - initialPointX);
@@ -283,17 +285,21 @@ def MovementAnalysis():
 
     __global__ void NeighborSlope(float* a, float* b, int jump)
    {
+
+      // Finds all sequential slopes
       int tx = threadIdx.x;
       //printf("tx: %i, a[tx]: %f \\n", tx, a[tx]);
       printf("tx: %i, a[tx]: %f, a[(tx+jump)*2 +1)]: %f, (a[(tx+jump)*2]: %f \\n", tx, a[tx], a[(tx+jump)*2 +1], a[(tx+jump)*2]);
-
       b[tx] = (a[(tx+jump)*2 + 1] - a[(tx*2) + 1]) /  (a[(tx+jump)*2] - a[(tx*2)]);
    }
 
    __global__ void DistanceCompare(float* a, float* b, float* c)
    {
-      int tx = threadIdx.x;
 
+
+      int tx = threadIdx.x;
+      
+      // Break the HASH down to analyze
       float UP = a[0];
       float DOWN = a[1];
       float LEFT = a[2];
@@ -301,6 +307,7 @@ def MovementAnalysis():
       float CORNERS = a[4];
       float MOVES_TOTAL = UP + DOWN + LEFT + RIGHT;
 
+      // Get the DB hash to compare
       float UP_DB = b[tx*5];
       float DOWN_DB = b[tx*5 + 1];
       float LEFT_DB = b[tx*5 + 2];
@@ -310,6 +317,7 @@ def MovementAnalysis():
 
       printf("UP_DB: %f, DOWN_DB: %f, LEFT_DB: %f, RIGHT_DB: %f, CORNERS_DB: %f \\n", UP_DB, DOWN_DB, LEFT_DB, RIGHT_DB, CORNERS_DB);
 
+      // Calculate the closeness to the DB hash
       float DISTANCE_COEFF = 0.0;
 
       if(CORNERS == CORNERS_DB)
@@ -322,6 +330,7 @@ def MovementAnalysis():
       DISTANCE_COEFF += 20 * (1- fabsf((LEFT_DB/MOVES_TOTAL_DB) - (LEFT/MOVES_TOTAL)));
       DISTANCE_COEFF += 20 * (1- fabsf((RIGHT_DB/MOVES_TOTAL_DB) - (RIGHT/MOVES_TOTAL)));
 
+      // Store to be compared
       c[tx] = DISTANCE_COEFF;
 
    }
