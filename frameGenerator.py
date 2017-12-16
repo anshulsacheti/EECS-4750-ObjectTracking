@@ -35,7 +35,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
     # ['line','zig_zag','triangle', 'square', 'pentagon']
     if move_set[0] in ['line','zig_zag','triangle', 'square', 'pentagon']:
 
-        if   move_set[0] == 'line':
+        if move_set[0] == 'line':
             direction = np.random.choice(['up','down','left','right'])
             move_set = [direction]*num_of_frames
 
@@ -177,7 +177,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
 
         # Determine if movement causes object to move out of bounds, ignore this frame set
         if object_x < 0 or object_x+size_of_object >= frame_size[0] or object_y < 0 or object_y+size_of_object >= frame_size[1]:
-            print("Got out of bounds")
+            # print("Got out of bounds")
             return [[],[]]
 
         if num_of_dims == 2:
@@ -190,10 +190,10 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
 
         frame_set.append(copy)
 
-    for i,frame in enumerate(frame_set):
-        frame = frame.astype(np.uint8)
-        tmp = Image.fromarray(frame)
-        tmp.save('frame' + str(i) + '.png')
+    # for i,frame in enumerate(frame_set):
+    #     frame = frame.astype(np.uint8)
+    #     tmp = Image.fromarray(frame)
+    #     tmp.save('frame' + str(i) + '.png')
     return [frame_set, goldenCoord]
 if __name__ == '__main__':
     gen()
