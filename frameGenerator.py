@@ -22,7 +22,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
     # pdb.set_trace()
 
     # Evaluate inputs correct
-    if not(move_set[0] in ['line','zig_zag','triangle', 'square', 'pentagon']) and \
+    if not(move_set[0] in ['LINE','ZIG-ZAG','TRIANGLE', 'SQUARE', 'PENTAGON']) and \
         (num_of_frames != len(move_set)):
         raise InputError('Number of frames generated doesn\'t match number of movements')
         return
@@ -33,13 +33,13 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
 
     # Overwriting move_set with auto generated actions that represent:
     # ['line','zig_zag','triangle', 'square', 'pentagon']
-    if move_set[0] in ['line','zig_zag','triangle', 'square', 'pentagon']:
+    if move_set[0] in ['LINE', 'ZIG-ZAG', 'TRIANGLE', 'SQUARE', 'PENTAGON']:
 
-        if move_set[0] == 'line':
+        if move_set[0] == 'LINE':
             direction = np.random.choice(['up','down','left','right'])
             move_set = [direction]*num_of_frames
 
-        elif move_set[0] == 'zig_zag':
+        elif move_set[0] == 'ZIG-ZAG':
 
             # Make even
             if num_of_frames % 2:
@@ -55,7 +55,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
             else:
                 move_set = [h_direction, v_direction]*num_of_frames_div2
 
-        elif move_set[0] == 'triangle':
+        elif move_set[0] == 'TRIANGLE':
 
             # Make divisble by 4
             if num_of_frames % 4:
@@ -90,7 +90,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
                 move_set.extend([h_next_direction,v_direction]*num_of_frames_div4)
                 move_set.extend([v_next_direction]*num_of_frames_div2)
 
-        elif move_set[0] == 'square':
+        elif move_set[0] == 'SQUARE':
 
             # Make divisble by 4
             if num_of_frames % 4:
@@ -108,7 +108,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
             move_set = np.roll(move_set,np.random.randint(4))
             move_set = [dir for set in move_set for dir in set]
 
-        elif move_set[0] == 'pentagon':
+        elif move_set[0] == 'PENTAGON':
 
             # Make divisble by 6 based on pentagon we're trying to draw
             if num_of_frames % 6:
