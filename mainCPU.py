@@ -1,4 +1,5 @@
 import numpy as np
+np.warnings.filterwarnings('ignore')
 import time
 # from pycuda import compiler, gpuarray
 import frameGenerator
@@ -6,78 +7,7 @@ import frameGenerator
 import movements
 from enum import IntEnum
 import argparse
-
-# MAIN
-
-# Generate frames with moving object
-
-# Build HASH
-  # Find the origins for object in each frame
-  # Determine the difference in movement between frames
-  # Classify the direction of movements (UP, DOWN, LEFT, RIGHT) between each frame
-  # Count the number of each directional movement
-  # Find the slopes of all adjacent points in the movement history
-  # Use slope history to determine the number of sides in the object's path history
-  # Use the directional number counts and the sides to build hash classifier
-
-# Pass into LSH
-  # Find nearness value to each item in movement database using the hash above
-  # Determine the highest scored value, ie movement determined to be most similar to the hash
-  # Retrieve the movement from the database
-
-# Print
-
-
-
-
-
-# frames = frameGenerator.gen( frame_size = [256, 256], num_of_frames = 2, move_set = ["right", "up"],
-#                        color_scale = 256, size_of_object = 15, movement_distance = 10)
-
-
-# Generate frames to be analyzed
-def createFrames(frame_size, num_of_frames, move_set, color_scale, size_of_object, movement_distance):
-
-    # GENERATE FRAMES TO BE ANALYZED
-    frames = []
-    goldenCoord = []
-
-    # while (not frames):
-    #     frames, goldenCoord = frameGenerator.gen( frame_size = [INPUT_SIZE_WIDTH, INPUT_SIZE_HEIGHT], num_of_frames = 72, move_set =
-    #                            ["right", "right", "right", "right","right", "right","right","right","right","right","right","right","right","right","right","right","right","right",
-    #                             "up", "up", "up", "up","up","up","up","up","up","up","up","up","up","up","up","up","up","up",
-    #                             "left","left","left","left","left","left","left","left","left","left","left","left","left","left","left","left","left","left",
-    #                             "down","down","down","down","down","down","down","down","down","down","down","down","down","down","down","down","down","down"],
-    #                            color_scale = 256, size_of_object = 5, movement_distance = 4)
-
-    while (not frames):
-        frames, goldenCoord = frameGenerator.gen( frame_size = frame_size, num_of_frames = num_of_frames, move_set = move_set,
-                                                    color_scale = color_scale, size_of_object = size_of_object, movement_distance = movement_distance)
-
-    # TESTS
-
-    #while (not frames):
-    #    frames, goldenCoord = frameGenerator.gen( frame_size = [INPUT_SIZE_WIDTH, INPUT_SIZE_HEIGHT], num_of_frames = 72, move_set = 'square'
-    #                           color_scale = 256, size_of_object = 5, movement_distance = 4)
-
-    #while (not frames):
-    #    frames, goldenCoord = frameGenerator.gen( frame_size = [INPUT_SIZE_WIDTH, INPUT_SIZE_HEIGHT], num_of_frames = 72, move_set = 'triangle'
-    #                           color_scale = 256, size_of_object = 5, movement_distance = 4)
-
-    #while (not frames):
-    #    frames, goldenCoord = frameGenerator.gen( frame_size = [INPUT_SIZE_WIDTH, INPUT_SIZE_HEIGHT], num_of_frames = 72, move_set = 'line'
-    #                           color_scale = 256, size_of_object = 5, movement_distance = 4)
-
-    #while (not frames):
-    #    frames, goldenCoord = frameGenerator.gen( frame_size = [INPUT_SIZE_WIDTH, INPUT_SIZE_HEIGHT], num_of_frames = 72, move_set = 'zig-zag'
-    #                           color_scale = 256, size_of_object = 5, movement_distance = 4)
-
-    #while (not frames):
-    #    frames, goldenCoord = frameGenerator.gen( frame_size = [INPUT_SIZE_WIDTH, INPUT_SIZE_HEIGHT], num_of_frames = 72, move_set = 'pentagon'
-    #                           color_scale = 256, size_of_object = 5, movement_distance = 4)
-
-    # TESTS
-    return [frames, goldenCoord]
+import mainCmdParsing
 
 # Find origins of object in frames
 def findOrigins(frames, goldenCoord):
@@ -123,7 +53,7 @@ def findOrigins(frames, goldenCoord):
                     frameOrigins[frameCount*2] = c;
                     frameOrigins[frameCount*2+1] = r;
 
-    print("Generated origins == golden: %s" % (np.allclose(frameOrigins, goldenCoord)))
+    # print("Generated origins == golden: %s" % (np.allclose(frameOrigins, goldenCoord)))
     return frameOrigins
 
 # Get slopes between jumps to determine the number of sides of the path
@@ -233,8 +163,6 @@ def calculateShape(frames, goldenCoord):
     # print(origins)
     # Calculate directional movement of object between frames
     frameMovements, frameMovementsInts = movements.frameCompare(origins)
-    print(frameMovements)
-    print(frameMovementsInts)
     # print (frameMovements)
     # print (frameMovementsInts)
 
@@ -243,19 +171,17 @@ def calculateShape(frames, goldenCoord):
     MOVEMENT_HASH = []
     MOVEMENT_HASH += np.histogram(frameMovementsInts, bins=[0,1,2,3,4])[0].tolist()
 
-    print(MOVEMENT_HASH)
     # Get slopes between jumps to determine the number of sides of the path
     JUMP = 3
     slopesBetweenJumps = neighborSlope(frameMovementsInts, JUMP, goldenCoord)
-    print(slopesBetweenJumps)
     # print(slopesBetweenJumps)
 
     sides = countSlopeChange(slopesBetweenJumps)
-    print(sides)
+    # print(sides)
 
     # Build up more of the hash
     MOVEMENT_HASH.append(sides)
-    print(MOVEMENT_HASH)
+    # print(MOVEMENT_HASH)
 
     # Slope difference is being used so commented this out
     # countSides = countSlopeChange2(slopesBetweenJumps)
@@ -264,37 +190,21 @@ def calculateShape(frames, goldenCoord):
 
     closestDist, i, SHAPE_MATCH = DistanceCompare(MOVEMENT_HASH, np.asarray(movements.MOVEMENT_DB), movements.MOVEMENT_DB_NAME)
 
-    print("BEST SCORE: ")
-    print(closestDist)
+    # print("BEST SCORE: ")
+    # print(closestDist)
+    #
+    # print("INDEX OF BEST SCORE: ")
+    # print(i)
+    #
+    # print("FINAL PATH SHAPE MATCH: ")
+    # print(SHAPE_MATCH)
 
-    print("INDEX OF BEST SCORE: ")
-    print(i)
-
-    print("FINAL PATH SHAPE MATCH: ")
-    print(SHAPE_MATCH)
-
-    # return [closestDist, i, SHAPE_MATCH]
-
-def main(args):
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--INPUT_SIZE_HEIGHT', type=int)
-    parser.add_argument('--INPUT_SIZE_WIDTH', type=int)
-    parser.add_argument('--num_of_frames', type=int)
-    parser.add_argument('--move_set', type=str)
-    parser.add_argument('--color_scale', type=int)
-    parser.add_argument('--size_of_object', type=int)
-    parser.add_argument('--movement_distance', type=int)
-
-    args = parser.parse_args()
-
-    frames, goldenCoord = createFrames(frame_size = [args.INPUT_SIZE_HEIGHT, args.INPUT_SIZE_WIDTH], num_of_frames = args.num_of_frames, move_set = [args.move_set],
-                           color_scale = args.color_scale, size_of_object = args.size_of_object, movement_distance = args.movement_distance)
-
-    calculateShape(frames, goldenCoord)
-
-    return [frames, goldenCoord]
+    return SHAPE_MATCH
 
 if __name__=='__main__':
 
     import sys
-    main(sys.argv[1:])
+    frames, goldenCoord = mainCmdParsing.main_cmdLine(sys.argv[1:])
+    SHAPE_MATCH = calculateShape(frames, goldenCoord)
+
+    print("Shape matched to: %s" % (SHAPE_MATCH))

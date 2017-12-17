@@ -289,7 +289,7 @@ def MovementAnalysis():
       // Finds all sequential slopes
       int tx = threadIdx.x;
       //printf("tx: %i, a[tx]: %f \\n", tx, a[tx]);
-      printf("tx: %i, a[tx]: %f, a[(tx+jump)*2 +1)]: %f, (a[(tx+jump)*2]: %f \\n", tx, a[tx], a[(tx+jump)*2 +1], a[(tx+jump)*2]);
+      //printf("tx: %i, a[tx]: %f, a[(tx+jump)*2 +1)]: %f, (a[(tx+jump)*2]: %f \\n", tx, a[tx], a[(tx+jump)*2 +1], a[(tx+jump)*2]);
       b[tx] = (a[(tx+jump)*2 + 1] - a[(tx*2) + 1]) /  (a[(tx+jump)*2] - a[(tx*2)]);
    }
 
@@ -298,7 +298,7 @@ def MovementAnalysis():
 
 
       int tx = threadIdx.x;
-      
+
       // Break the HASH down to analyze
       float UP = a[0];
       float DOWN = a[1];
@@ -315,7 +315,7 @@ def MovementAnalysis():
       float CORNERS_DB = b[tx*5 + 4];
       float MOVES_TOTAL_DB = UP_DB + DOWN_DB + LEFT_DB + RIGHT_DB;
 
-      printf("UP_DB: %f, DOWN_DB: %f, LEFT_DB: %f, RIGHT_DB: %f, CORNERS_DB: %f \\n", UP_DB, DOWN_DB, LEFT_DB, RIGHT_DB, CORNERS_DB);
+      // printf("UP_DB: %f, DOWN_DB: %f, LEFT_DB: %f, RIGHT_DB: %f, CORNERS_DB: %f \\n", UP_DB, DOWN_DB, LEFT_DB, RIGHT_DB, CORNERS_DB);
 
       // Calculate the closeness to the DB hash
       float DISTANCE_COEFF = 0.0;
@@ -346,4 +346,3 @@ def MovementAnalysis():
     """)
 
     return kernels
-
