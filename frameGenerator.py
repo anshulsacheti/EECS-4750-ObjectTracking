@@ -34,7 +34,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
     # Overwriting move_set with auto generated actions that represent:
     # ['line','zig_zag','triangle', 'square', 'pentagon']
     if move_set[0] in ['LINE', 'ZIG-ZAG', 'TRIANGLE', 'SQUARE', 'PENTAGON']:
-
+        # print("Found move: %s" % move_set[0])
         if move_set[0] == 'LINE':
             direction = np.random.choice(['up','down','left','right'])
             move_set = [direction]*num_of_frames
@@ -59,7 +59,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
 
             # Make divisble by 4
             if num_of_frames % 4:
-                num_of_frames = (num_of_frames/4) * 4
+                num_of_frames = int(num_of_frames/4) * 4
 
             move_set = []
 
@@ -77,24 +77,24 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
                 h_direction = 'right'
                 h_next_direction = 'left'
 
-            num_of_frames_div4 = int(num_of_frames/4)
-            num_of_frames_div2 = int(num_of_frames/2)
+            num_of_frames_div6 = int(num_of_frames/6)
+            num_of_frames_div3 = int(num_of_frames/3)
 
             # Different combinations form different triangles
             if np.random.uniform()>0.5:
-                move_set = [v_direction, h_direction]*num_of_frames_div4
-                move_set.extend([v_next_direction, h_direction]*num_of_frames_div4)
-                move_set.extend([h_next_direction]*num_of_frames_div2)
+                move_set = [v_direction, h_direction]*num_of_frames_div6
+                move_set.extend([v_next_direction, h_direction]*num_of_frames_div6)
+                move_set.extend([h_next_direction]*num_of_frames_div3)
             else:
-                move_set = [h_direction, v_direction]*num_of_frames_div4
-                move_set.extend([h_next_direction,v_direction]*num_of_frames_div4)
-                move_set.extend([v_next_direction]*num_of_frames_div2)
+                move_set = [h_direction, v_direction]*num_of_frames_div6
+                move_set.extend([h_next_direction,v_direction]*num_of_frames_div6)
+                move_set.extend([v_next_direction]*num_of_frames_div3)
 
         elif move_set[0] == 'SQUARE':
 
             # Make divisble by 4
             if num_of_frames % 4:
-                num_of_frames = (num_of_frames/4) * 4
+                num_of_frames = int(num_of_frames/4) * 4
 
             move_set = []
             num_of_frames_div4 = int(num_of_frames/4)
@@ -110,24 +110,25 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
 
         elif move_set[0] == 'PENTAGON':
 
-            # Make divisble by 6 based on pentagon we're trying to draw
-            if num_of_frames % 6:
-                num_of_frames = (num_of_frames/6) * 6
+            # Make divisble by 10 based on pentagon we're trying to draw
+            if num_of_frames % 10:
+                num_of_frames = int(num_of_frames/10) * 10
 
             move_set = []
-            num_of_frames_div3 = int(num_of_frames/3)
-            num_of_frames_div6 = int(num_of_frames/6)
-            num_of_frames_div12 = int(num_of_frames/12)
+            num_of_frames_div5 = int(num_of_frames/5)
+            num_of_frames_div10 = int(num_of_frames/10)
 
-            move_set.append(['up']*num_of_frames_div6)
-            move_set.append(['right','up']*num_of_frames_div12)
-            move_set.append(['right','down']*num_of_frames_div12)
-            move_set.append(['down']*num_of_frames_div6)
-            move_set.append(['left']*num_of_frames_div3)
+            move_set.append(['up']*num_of_frames_div5)
+            move_set.append(['right','up']*num_of_frames_div10)
+            move_set.append(['right','down']*num_of_frames_div10)
+            move_set.append(['down']*num_of_frames_div5)
+            move_set.append(['left']*num_of_frames_div5)
 
             # Put different sets of directions together
             move_set = np.roll(move_set,np.random.randint(5))
             move_set = [dir for set in move_set for dir in set]
+    else:
+        print("Move set not found with %s" % move_set)
 
     # Generate initial frame
     frame0 = np.random.randint(0,high=color_scale-1,size=frame_size)
