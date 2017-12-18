@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
 
-    move_path = ['LINE', 'ZIG-ZAG', 'TRIANGLE', 'SQUARE', 'PENTAGON']
+    move_path = ['LINE', 'TRIANGLE', 'SQUARE', 'PENTAGON']
 
-    # Iterate over each path type 1000 times
+    # Iterate over each path type 100 times
     # Calculate how often each gets the answer correct
     # Measure runtime
     cpuRuntime = np.zeros(len(move_path))
@@ -29,14 +29,14 @@ if __name__ == '__main__':
         cpuErrorRate = 0
         gpuErrorRate = 0
         mismatchErrorRate = 0
-        iterations = 100
+        iterations = 15
 
 
         for i in range(iterations):
 
             # Runtime concerns on CPU implementation mean that larger frames take significantly longer
             # To address this we have a smaller number of frames, and the size of frames is smaller as well
-            frames, goldenCoord = mainCmdParsing.createFrames(frame_size = [256, 256], num_of_frames = 25, move_set = [path], color_scale = 256, size_of_object = 5, movement_distance = 4)
+            frames, goldenCoord = mainCmdParsing.createFrames(frame_size = [320, 320], num_of_frames = 72, move_set = [path], color_scale = 256, size_of_object = 5, movement_distance = 4)
 
             start = time.time()
             cpuShape = mainCPU.calculateShape(frames=frames, goldenCoord=goldenCoord)
@@ -55,8 +55,8 @@ if __name__ == '__main__':
             if gpuShape.find(cpuShape):
                 mismatchErrorRate+=1
 
-            if i % 20 == 0:
-                print("On iter %d of %s" % (i, path))
+            # if i % 20 == 0:
+            #     print("On iter %d of %s" % (i, path))
             # print("Shapes - CPU: %s, gpuShape: %s" % (cpuShape, gpuShape))
             # print("Current error rates: %f %f %f" % (cpuErrorRate, gpuErrorRate, mismatchErrorRate))
 

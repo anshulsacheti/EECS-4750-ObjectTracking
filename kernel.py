@@ -7,6 +7,7 @@ import pycuda.autoinit
 
 def genModulo():
     """
+    Calculates corners of objects across all frames
     Returns: GPU kernel
     """
 

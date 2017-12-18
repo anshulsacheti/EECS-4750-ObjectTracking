@@ -11,12 +11,12 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
     Returns: set of frames representative of single movement
 
     Inputs:
-        frame_size:
-        num_of_frames:
-        move_set:
-        color_scale:
+        frame_size
+        num_of_frames
+        move_set: The movements such as up/down/left/right frame to frame or the overall shape they should take such as 'triangle'
+        color_scale: The range of values for each pixel
         size_of_object:
-        movement_distance:
+        movement_distance: How much to move in a given direction frame to frame
     Outputs: List of numpy n-d arrays. Zero index is initial frame. All subsequent frames follow each movement from move_set
     """
     # pdb.set_trace()
@@ -81,7 +81,7 @@ def gen( frame_size = [256, 256], num_of_frames = 24, move_set = ["right", "up"]
             num_of_frames_div3 = int(num_of_frames/3)
 
             # Different combinations form different triangles
-            if np.random.uniform()>0.5:
+            if np.random.uniform()>=0.0:
                 move_set = [v_direction, h_direction]*num_of_frames_div6
                 move_set.extend([v_next_direction, h_direction]*num_of_frames_div6)
                 move_set.extend([h_next_direction]*num_of_frames_div3)

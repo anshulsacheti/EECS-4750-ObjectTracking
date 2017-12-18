@@ -9,9 +9,13 @@ from enum import IntEnum
 import argparse
 import mainCmdParsing
 
-# Find origins of object in frames
 def findOrigins(frames, goldenCoord):
-
+    """
+    Passes frames to CPU for origin calculation
+    frames: set of frames representing object movement over time
+    goldenCoord: golden origin coordinates
+    Returns: list of object origins corresponding to each frame
+    """
     img_height = frames[0].shape[0]
     img_width = frames[0].shape[1]
 
@@ -56,11 +60,13 @@ def findOrigins(frames, goldenCoord):
     # print("Generated origins == golden: %s" % (np.allclose(frameOrigins, goldenCoord)))
     return frameOrigins
 
-# Get slopes between jumps to determine the number of sides of the path
 def neighborSlope(fMI, jump, goldenCoord):
     """
+    Calculates the slope of the object movement across frames 
     jump: Amount to jump forward over range when calculating slope
     fMI: list of frame movement ints
+    goldenCoord: golden origin coordinates
+    Returns: list of slopes between sets of frames
     """
 
     slopesBetweenJumps = np.zeros(int(len(fMI)/2) - jump)
@@ -76,7 +82,11 @@ def neighborSlope(fMI, jump, goldenCoord):
 
 # counts slope change to count sides
 def countSlopeChange(slopesBetweenJumps):
-
+    """
+    Counts the number of slope changes and corresponds that to sides
+    slopesBetweenJumps: list of slopes
+    Returns: side count
+    """
     currSlope = 10000
     sides = 0
     for x in slopesBetweenJumps:
@@ -87,7 +97,9 @@ def countSlopeChange(slopesBetweenJumps):
 
 # Another algo to count slope change to count sides
 def countSlopeChange2(slopesBetweenJumps):
-
+    """
+    Not Used
+    """
     countSides = 0
     currSlope2 = 10000
     runningTotal = 0
@@ -105,9 +117,14 @@ def countSlopeChange2(slopesBetweenJumps):
 
     return countSides
 
-# Runs a locality sensitive hash variant to calculate the overall movement of an input object
 def DistanceCompare(MOVEMENT_HASH, MOVEMENT_DB, MOVEMENT_DB_NAME):
-
+    """
+    Runs a locality sensitive hash variant to calculate the overall path of an input object
+    MOVEMENT_HASH: list of number of movements in each direction and side count
+    MOVEMENT_DB: Contains reference for what each shape looks like with regards to slope
+    MOVEMENT_DB_NAME: list of shape names
+    Returns: str of most likely shape
+    """
     SCORED_CLOSENESS = np.zeros(len(MOVEMENT_DB))
 
     # Iterate over every movement
@@ -155,6 +172,9 @@ def DistanceCompare(MOVEMENT_HASH, MOVEMENT_DB, MOVEMENT_DB_NAME):
 def calculateShape(frames, goldenCoord):
     """
     Calculate final path representation of input
+    frames: set of frames representing object movement over time
+    goldenCoord: golden origin coordinates
+    Returns: shape most likely to be object path
     """
 
     # Get origin of object in each frame
@@ -202,7 +222,9 @@ def calculateShape(frames, goldenCoord):
     return SHAPE_MATCH
 
 if __name__=='__main__':
-
+    """
+    Runs CPU code for object path identification
+    """
     import sys
     frames, goldenCoord = mainCmdParsing.main_cmdLine(sys.argv[1:])
     SHAPE_MATCH = calculateShape(frames, goldenCoord)
